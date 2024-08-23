@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const baliseLogout = document.getElementById("logout");
-    baliseLogout.addEventListener("click", function () {
+    const baliseLogout = document.getElementById('logout');
+    baliseLogout.addEventListener('click', function () {
         localStorage.clear();
         location.reload();
     });
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContainer = document.querySelector('#modal-container');
 
     const modalMain = createModalMain();
-    const modalAddPhoto = createmodalAddPhoto();
+    const modalAddPhoto = createModalAddPhoto();
 
     modalContainer.appendChild(modalMain);
     modalContainer.appendChild(modalAddPhoto);
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.addEventListener('click', (event) => {
             if (event.target === modal) {
                 modal.classList.add('hidden');
+                clearModal();
             }
         });
     });
@@ -60,19 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             modalMain.classList.add('hidden');
             modalAddPhoto.classList.add('hidden');
+            clearModal();
         });
     });
 
     //Gestion de la suppression de projet
     async function displayAdminGallery() {
         const portfolioItems = await getProject();
-        const baliseAdminGallery = modalMain.querySelector(".adminGallery");
+        const baliseAdminGallery = modalMain.querySelector('.adminGallery');
 
-        baliseAdminGallery.innerHTML = ""
+        baliseAdminGallery.innerHTML = ''
         portfolioItems.forEach((portfolioItem) => {
-            const baliseFigure = document.createElement("figure");
-            const baliseImg = document.createElement("img");
-            const balisebin = document.createElement("i");
+            const baliseFigure = document.createElement('figure');
+            const baliseImg = document.createElement('img');
+            const balisebin = document.createElement('i');
 
             baliseImg.src = portfolioItem.imageUrl;
             baliseImg.alt = portfolioItem.title;
@@ -95,18 +97,18 @@ document.addEventListener('DOMContentLoaded', () => {
     async function deleteProject(projectId) {
         try {
             const response = await fetch(`http://localhost:5678/api/works/${projectId}`, {
-                method: "DELETE",
-                headers: { "Authorization": "Bearer " + localStorage.getItem('token') }
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
 
             if (!response.ok) {
-                throw new Error("Une erreur est survenue")
+                throw new Error('Une erreur est survenue')
             }
             displayProject()
             displayAdminGallery()
         } catch (error) {
             console.error(error)
-            //
+            alert('Une erreur est survenue lors de la suppression du projet, veuillez ressayer plus tard.');
         }
     }
 
@@ -139,58 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
         checkFields();
     });
 
-    function checkFields() {
-        const ValidateButton = document.getElementById('submit');
-        const photofield = document.getElementById('previewImage');
-        const titleField = document.getElementById('title');
-        const categorieField = document.getElementById('categorie');
-        if (photofield.src !== '' && titleField.value !== '' && categorieField.value !== '') {
-            ValidateButton.disabled = false;
-        } else {
-            ValidateButton.disabled = true;
-        }
-    }
-    const ValidateButton = document.getElementById('submit');
-    const photofield = document.getElementById('previewImage');
-    const titleField = document.getElementById('title');
-    const categorieField = document.getElementById('categorie');
-
-    photofield.addEventListener('load', checkFields);
-    titleField.addEventListener('input', checkFields);
-    categorieField.addEventListener('change', checkFields);
-
-    async function addProject() {
-        const fileInput = modalAddPhoto.querySelector('#fileInput');
-        const titleField = document.getElementById('title');
-        const categorieField = document.getElementById('categorie');
-
-        const formData = new FormData();
-        formData.append("title", titleField.value);
-        formData.append("category", categorieField.value);
-        formData.append("image", fileInput.files[0]);
-
-        try {
-            const response = await fetch("http://localhost:5678/api/works", {
-                method: "POST",
-                headers: { "Authorization": "Bearer " + localStorage.getItem('token') },
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error("Une erreur est survenue")
-            }
-            displayProject()
-            displayAdminGallery()
-        } catch (error) {
-            console.error(error)
-            //
-        }
-    }
-    ValidateButton.addEventListener('click', function (event) {
-        event.preventDefault()
-        addProject();
-    });
-
     async function displayAdminCategories() {
         const categories = await getCategories();
         const baliseAdminCategories = modalAddPhoto.querySelector('#categorie');
@@ -206,51 +156,125 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     displayAdminCategories();
 
+    function checkFields() {
+        const validateButton = document.getElementById('submit');
+        const photoField = document.getElementById('previewImage');
+        const titleField = document.getElementById('title');
+        const categorieField = document.getElementById('categorie');
+        if (photoField.src !== '' && titleField.value !== '' && categorieField.value !== '') {
+            validateButton.disabled = false;
+        } else {
+            validateButton.disabled = true;
+        }
+    }
+
+    const validateButton = document.getElementById('submit');
+    const photoField = document.getElementById('previewImage');
+    const titleField = document.getElementById('title');
+    const categorieField = document.getElementById('categorie');
+
+    photoField.addEventListener('load', checkFields);
+    titleField.addEventListener('input', checkFields);
+    categorieField.addEventListener('change', checkFields);
+
+    async function addProject() {
+        const fileInput = modalAddPhoto.querySelector('#fileInput');
+        const titleField = document.getElementById('title');
+        const categorieField = document.getElementById('categorie');
+
+        const formData = new FormData();
+        formData.append('title', titleField.value);
+        formData.append('category', categorieField.value);
+        formData.append('image', fileInput.files[0]);
+
+        try {
+            const response = await fetch('http://localhost:5678/api/works', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Une erreur est survenue')
+            }
+            displayProject()
+            displayAdminGallery()
+        } catch (error) {
+            console.error(error)
+            alert('Une erreur est survenue lors de l\'ajout du projet, veuillez ressayer plus tard.');
+        }
+    }
+    validateButton.addEventListener('click', function (event) {
+        event.preventDefault()
+        addProject();
+        clearModal();
+    });
+
+    async function clearModal() {
+        const titleField = document.getElementById('title');
+        if (titleField) {
+            titleField.value = '';
+        }
+
+        const categorieField = document.getElementById('categorie');
+        if (categorieField) {
+            categorieField.selectedIndex = 0;
+        }
+
+        const placeholderContainer = document.querySelector('.placeholderContainer');
+        const previewImage = document.getElementById('previewImage');
+        if (previewImage) {
+            placeholderContainer.classList.remove('hidden');
+            previewImage.classList.add('hidden');
+        }
+        checkFields();
+    }
+
     //Création des modals
     function createModalMain() {
         const modal = document.createElement('aside');
         modal.id = 'modal-main';
         modal.className = 'modalMain modal hidden';
         modal.innerHTML = `
-            <div class="modalWrapper">
-                <button class="cancelButton">X</button>
-                <h2 class="titleModal">Galerie photo</h2>
-                <div class="adminGallery"></div>
-                <hr class="separator">
-                <input class="addPhotoButton" type="submit" value="Ajouter une photo" id="add-photo-button">
+            <div class='modalWrapper'>
+                <button class='cancelButton'>X</button>
+                <h2 class='titleModal'>Galerie photo</h2>
+                <div class='adminGallery'></div>
+                <hr class='separator'>
+                <input class='addPhotoButton' type='submit' value='Ajouter une photo' id='add-photo-button'>
             </div>`;
 
         return modal;
     }
 
-    function createmodalAddPhoto() {
+    function createModalAddPhoto() {
         const modal = document.createElement('aside');
         modal.id = 'modal-add';
         modal.className = 'modalAdd modal hidden';
         modal.innerHTML = `
-        <div class="modalWrapper">
-            <button class="fa-solid fa-arrow-left js-modal-back"></button>
-            <button class="cancelButton">X</button>
-            <form class="addPhotoBox">
-                <h2 class="titleModal">Ajout photo</h2>
-                <section id="addPhotoFields">
-                    <div class="previewPhotoContainer">
-                        <div class="placeholderContainer">
-                            <img src="./assets/images/placeholder.svg" alt="placeholder">
-			                <label for='fileInput' class="addPhotoButton">+ Ajouter photo
-				                <input id="fileInput" class='hidden' type='file' name="fileInput" accept=".jpg,.jpeg,.png"/>
+        <div class='modalWrapper'>
+            <button class='fa-solid fa-arrow-left js-modal-back'></button>
+            <button class='cancelButton'>X</button>
+            <form class='addPhotoBox'>
+                <h2 class='titleModal'>Ajout photo</h2>
+                <section id='addPhotoFields'>
+                    <div class='previewPhotoContainer'>
+                        <div class='placeholderContainer'>
+                            <img src='./assets/images/placeholder.svg' alt='placeholder'>
+			                <label for='fileInput' class='addPhotoButton'>+ Ajouter photo
+				                <input id='fileInput' class='hidden' type='file' name='fileInput' accept='.jpg,.jpeg,.png'/>
 			                </label>
                             <p>jpg, png : 4mo max</p>
                         </div>
-                        <img id="previewImage" class=" hidden addPhotoImg" />
+                        <img id='previewImage' class=' hidden addPhotoImg' />
                     </div>
-                    <label for="title">Titre</label>
-                    <input type="text" name="titre" id="title">
-                    <label for="categorie">Catégorie</label>
-                    <select name="categorie" id="categorie"></select>
+                    <label for='title'>Titre</label>
+                    <input type='text' name='titre' id='title'>
+                    <label for='categorie'>Catégorie</label>
+                    <select name='categorie' id='categorie'></select>
                 </section>
-                <hr class="separator">
-                <input class="validateButton" type="submit" value="Valider" id="submit" disabled>
+                <hr class='separator'>
+                <input class='validateButton' type='submit' value='Valider' id='submit' disabled>
             </form>
         </div>`;
 
