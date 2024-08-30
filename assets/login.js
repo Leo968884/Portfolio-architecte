@@ -85,6 +85,6 @@ function snackbarError(message) {
 submitButton.addEventListener("click", function (event) {
     event.preventDefault();
     if (!validateForm()) {
-        console.log(postLogin());
+        postLogin()
     }
 });

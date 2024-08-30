@@ -1,28 +1,40 @@
 async function getProject() {
     const works = await fetch("http://localhost:5678/api/works");
-    console.log(works);
     const worksJson = await works.json();
-    console.log(worksJson);
     return worksJson;
 }
 
 async function getCategories() {
     const categories = await fetch("http://localhost:5678/api/categories");
-    console.log(categories);
     const categoriesJson = await categories.json();
-    console.log(categoriesJson);
     return categoriesJson;
 }
 
-const baliseLogin = document.getElementById("login");
+async function displayProject() {
+    const portfolioItems = await getProject();
+    const baliseGallery = document.querySelector(".gallery");
 
-baliseLogin.addEventListener("click", function () {
-    location.assign("./login.html");
-});
+    portfolioItems.forEach((portfolioItem) => {
+        const baliseFigure = document.createElement("figure");
+        const baliseImg = document.createElement("img");
+        const baliseFigcaption = document.createElement("figcaption");
+
+        baliseImg.src = portfolioItem.imageUrl;
+        baliseImg.alt = portfolioItem.title;
+        baliseFigcaption.textContent = portfolioItem.title;
+        baliseFigure.dataset.id = portfolioItem.categoryId;
+        baliseFigure.dataset.projectId = portfolioItem.id;
+
+        baliseFigure.appendChild(baliseImg);
+        baliseFigure.appendChild(baliseFigcaption);
+        baliseGallery.appendChild(baliseFigure);
+
+    });
+}
 
 async function displayCategories() {
     const categories = await getCategories();
-    categories.unshift({ id: 0, name: "Tous", class: "categorieSelected" });
+    categories.unshift({ id: 0, name: "Tous" });
     const baliseCategories = document.querySelector(".categories");
 
     categories.forEach((categorie) => {
@@ -53,28 +65,11 @@ async function displayCategories() {
     });
 }
 
-async function displayProject() {
-    const portfolioItems = await getProject();
-    const baliseGallery = document.querySelector(".gallery");
+const baliseLogin = document.getElementById("login");
 
-    baliseGallery.innerHTML = ""
-    portfolioItems.forEach((portfolioItem) => {
-        const baliseFigure = document.createElement("figure");
-        const baliseImg = document.createElement("img");
-        const baliseFigcaption = document.createElement("figcaption");
-
-        baliseImg.src = portfolioItem.imageUrl;
-        baliseImg.alt = portfolioItem.title;
-        baliseFigcaption.textContent = portfolioItem.title;
-        baliseFigure.dataset.id = portfolioItem.categoryId;
-        baliseFigure.dataset.projectId = portfolioItem.id;
-
-        baliseFigure.appendChild(baliseImg);
-        baliseFigure.appendChild(baliseFigcaption);
-        baliseGallery.appendChild(baliseFigure);
-
-    });
-}
+baliseLogin.addEventListener("click", function () {
+    location.assign("./login.html");
+});
 
 displayCategories()
 displayProject()

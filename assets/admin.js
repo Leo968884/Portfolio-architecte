@@ -17,6 +17,57 @@ document.addEventListener('DOMContentLoaded', () => {
         location.reload();
     });
 
+    //Création des modals
+    function createModalMain() {
+        const modal = document.createElement('aside');
+        modal.id = 'modal-main';
+        modal.className = 'modalMain modal hidden';
+        modal.innerHTML = `
+            <div class='modalWrapper'>
+                <button class='cancelButton'>X</button>
+                <h2 class='titleModal'>Galerie photo</h2>
+                <div class='adminGallery'></div>
+                <hr class='separator'>
+                <input class='addPhotoButton' type='submit' value='Ajouter une photo' id='add-photo-button'>
+            </div>`;
+
+        return modal;
+    }
+
+    function createModalAddPhoto() {
+        const modal = document.createElement('aside');
+        modal.id = 'modal-add';
+        modal.className = 'modalAdd modal hidden';
+        modal.innerHTML = `
+        <div class='modalWrapper'>
+            <button class='fa-solid fa-arrow-left js-modal-back'></button>
+            <button class='cancelButton'>X</button>
+            <form class='addPhotoBox'>
+                <h2 class='titleModal'>Ajout photo</h2>
+                <section id='addPhotoFields'>
+                    <div class='previewPhotoContainer'>
+                        <div class='placeholderContainer'>
+                            <img src='./assets/images/placeholder.svg' alt='placeholder'>
+			                <label for='fileInput' class='addPhotoButton'>+ Ajouter photo
+				                <input id='fileInput' class='hidden' type='file' name='fileInput' accept='.jpg,.jpeg,.png'/>
+			                </label>
+                            <p>jpg, png : 4mo max</p>
+                        </div>
+                        <img id='previewImage' class=' hidden addPhotoImg' />
+                    </div>
+                    <label for='title'>Titre</label>
+                    <input type='text' name='titre' id='title'>
+                    <label for='categorie'>Catégorie</label>
+                    <select name='categorie' id='categorie'></select>
+                </section>
+                <hr class='separator'>
+                <input class='validateButton' type='submit' value='Valider' id='submit' disabled>
+            </form>
+        </div>`;
+
+        return modal;
+    }
+
     //Gestion des modals
     const modifiedButton = document.querySelector('#modified-Button');
     const modalContainer = document.querySelector('#modal-container');
@@ -65,6 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    function snackbarError(message) {
+        const snackbar = document.createElement('div');
+        snackbar.className = 'snackbar';
+        snackbar.textContent = message;
+        document.body.appendChild(snackbar);
+        setTimeout(() => {
+            document.body.removeChild(snackbar);
+        }, 3000);
+    }
+
     //Gestion de la suppression de projet
     async function displayAdminGallery() {
         const portfolioItems = await getProject();
@@ -107,8 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayProject()
             displayAdminGallery()
         } catch (error) {
-            console.error(error)
-            alert('Une erreur est survenue lors de la suppression du projet, veuillez ressayer plus tard.');
+            snackbarError('Une erreur est survenue lors de la suppression du projet, veuillez ressayer plus tard.');
         }
     }
 
@@ -138,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewImage.classList.remove('hidden');
             }
         }
-        checkFields();
     });
 
     async function displayAdminCategories() {
@@ -200,8 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayProject()
             displayAdminGallery()
         } catch (error) {
-            console.error(error)
-            alert('Une erreur est survenue lors de l\'ajout du projet, veuillez ressayer plus tard.');
+            snackbarError('Une erreur est survenue lors de l\'ajout du projet, veuillez ressayer plus tard.');
         }
     }
     validateButton.addEventListener('click', function (event) {
@@ -230,55 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         checkFields();
     }
 
-    //Création des modals
-    function createModalMain() {
-        const modal = document.createElement('aside');
-        modal.id = 'modal-main';
-        modal.className = 'modalMain modal hidden';
-        modal.innerHTML = `
-            <div class='modalWrapper'>
-                <button class='cancelButton'>X</button>
-                <h2 class='titleModal'>Galerie photo</h2>
-                <div class='adminGallery'></div>
-                <hr class='separator'>
-                <input class='addPhotoButton' type='submit' value='Ajouter une photo' id='add-photo-button'>
-            </div>`;
 
-        return modal;
-    }
-
-    function createModalAddPhoto() {
-        const modal = document.createElement('aside');
-        modal.id = 'modal-add';
-        modal.className = 'modalAdd modal hidden';
-        modal.innerHTML = `
-        <div class='modalWrapper'>
-            <button class='fa-solid fa-arrow-left js-modal-back'></button>
-            <button class='cancelButton'>X</button>
-            <form class='addPhotoBox'>
-                <h2 class='titleModal'>Ajout photo</h2>
-                <section id='addPhotoFields'>
-                    <div class='previewPhotoContainer'>
-                        <div class='placeholderContainer'>
-                            <img src='./assets/images/placeholder.svg' alt='placeholder'>
-			                <label for='fileInput' class='addPhotoButton'>+ Ajouter photo
-				                <input id='fileInput' class='hidden' type='file' name='fileInput' accept='.jpg,.jpeg,.png'/>
-			                </label>
-                            <p>jpg, png : 4mo max</p>
-                        </div>
-                        <img id='previewImage' class=' hidden addPhotoImg' />
-                    </div>
-                    <label for='title'>Titre</label>
-                    <input type='text' name='titre' id='title'>
-                    <label for='categorie'>Catégorie</label>
-                    <select name='categorie' id='categorie'></select>
-                </section>
-                <hr class='separator'>
-                <input class='validateButton' type='submit' value='Valider' id='submit' disabled>
-            </form>
-        </div>`;
-
-        return modal;
-    }
 
 });
