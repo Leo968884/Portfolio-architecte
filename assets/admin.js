@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Récupération du token d'authentification depuis le localStorage
     const token = localStorage.getItem('token');
+
+    // Sélection de tous les éléments avec la classe 'js-admin'
     const admin = document.querySelectorAll('.js-admin');
+
+    // Vérification de la présence du token
     if (token) {
+        // Parcours de tous les éléments 'js-admin'
         admin.forEach((element) => {
+            // Si l'élément a la classe 'hidden', on la retire, sinon on l'ajoute
             if (element.classList.contains('hidden')) {
                 element.classList.remove('hidden');
             } else {
@@ -11,13 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Sélection de l'élément de déconnexion
     const baliseLogout = document.getElementById('logout');
+
+    // Ajout d'un écouteur d'événement pour la déconnexion
     baliseLogout.addEventListener('click', function () {
+        // Suppression de toutes les données du localStorage et rechargement de la page
         localStorage.clear();
         location.reload();
     });
 
-    //Création des modals
+    // Fonction pour créer la modal principale
     function createModalMain() {
         const modal = document.createElement('aside');
         modal.id = 'modal-main';
@@ -34,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return modal;
     }
 
+    // Fonction pour créer la modal d'ajout de photo
     function createModalAddPhoto() {
         const modal = document.createElement('aside');
         modal.id = 'modal-add';
@@ -68,21 +80,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return modal;
     }
 
-    //Gestion des modals
+    // Sélection des éléments nécessaires pour la gestion des modals
     const modifiedButton = document.querySelector('#modified-Button');
     const modalContainer = document.querySelector('#modal-container');
 
+    // Création des modals
     const modalMain = createModalMain();
     const modalAddPhoto = createModalAddPhoto();
 
+    // Ajout des modals au conteneur
     modalContainer.appendChild(modalMain);
     modalContainer.appendChild(modalAddPhoto);
 
+    // Ajout d'un écouteur d'événement pour ouvrir la modal principale
     modifiedButton.addEventListener('click', (event) => {
         event.preventDefault();
         modalMain.classList.remove('hidden');
     });
 
+    // Ajout d'un écouteur d'événement pour fermer les modals en cliquant en dehors
     const modal = document.querySelectorAll('.modal');
     modal.forEach(modal => {
         modal.addEventListener('click', (event) => {
@@ -93,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Ajout d'un écouteur d'événement pour ouvrir la modal d'ajout de photo
     const addPhotoButton = modalMain.querySelector('#add-photo-button');
     addPhotoButton.addEventListener('click', (event) => {
         event.preventDefault();
@@ -100,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalAddPhoto.classList.remove('hidden');
     });
 
+    // Ajout d'un écouteur d'événement pour revenir à la modal principale
     const backButton = modalAddPhoto.querySelector('.js-modal-back');
     backButton.addEventListener('click', (event) => {
         event.preventDefault();
@@ -107,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalMain.classList.remove('hidden');
     });
 
+    // Ajout d'un écouteur d'événement pour fermer les modals
     const closeButton = document.querySelectorAll('.cancelButton');
     closeButton.forEach(button => {
         button.addEventListener('click', () => {
@@ -116,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Fonction pour afficher un message d'erreur
     function snackbarError(message) {
         const snackbar = document.createElement('div');
         snackbar.className = 'snackbar';
@@ -126,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    //Gestion de la suppression de projet
+    // Fonction pour afficher la galerie admin
     async function displayAdminGallery() {
         const portfolioItems = await getProject();
         const baliseAdminGallery = modalMain.querySelector('.adminGallery');
@@ -155,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     displayAdminGallery();
 
+    // Fonction pour supprimer un projet
     async function deleteProject(projectId) {
         try {
             const response = await fetch(`http://localhost:5678/api/works/${projectId}`, {
@@ -172,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //Gestion de l'ajout de projet
+    // Gestion de l'ajout de photo
     const fileInput = modalAddPhoto.querySelector('#fileInput');
     fileInput.addEventListener('change', function (event) {
         const file = event.target.files[0];
@@ -200,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Fonction pour afficher les catégories admin
     async function displayAdminCategories() {
         const categories = await getCategories();
         const baliseAdminCategories = modalAddPhoto.querySelector('#categorie');
@@ -215,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     displayAdminCategories();
 
+    // Fonction pour vérifier les champs du formulaire
     function checkFields() {
         const validateButton = document.getElementById('submit');
         const photoField = document.getElementById('previewImage');
@@ -227,15 +250,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Sélection des éléments du formulaire
     const validateButton = document.getElementById('submit');
     const photoField = document.getElementById('previewImage');
     const titleField = document.getElementById('title');
     const categorieField = document.getElementById('categorie');
 
+    // Ajout d'écouteurs d'événements pour vérifier les champs du formulaire
     photoField.addEventListener('load', checkFields);
     titleField.addEventListener('input', checkFields);
     categorieField.addEventListener('change', checkFields);
 
+    // Fonction pour ajouter un projet
     async function addProject() {
         const fileInput = modalAddPhoto.querySelector('#fileInput');
         const titleField = document.getElementById('title');
@@ -268,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearModal();
     });
 
+    // Fonction pour réinitialiser les champs du formulaire
     async function clearModal() {
         const titleField = document.getElementById('title');
         if (titleField) {
@@ -287,7 +314,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         checkFields();
     }
-
-
-
 });
